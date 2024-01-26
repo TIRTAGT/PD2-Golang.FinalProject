@@ -1,0 +1,16 @@
+go 1.21.6
+
+use (
+	.
+	./config
+
+	// Backend Web Controllers (harap tambah/hapus saat menambahkan/menghapus controller)
+	./controllers
+	./controllers/home
+
+	// Server Modules
+	./server
+	./server/controller/handlerstruct
+	./server/controller/utility
+	./server/routing
+)
