@@ -1,6 +1,7 @@
-package server
+package routing
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/TIRTAGT/PD2-Golang.FinalProject/controllers"
@@ -26,29 +27,31 @@ func HandleRoute(w http.ResponseWriter, r *http.Request) {
 		IsHandledByController := false
 		IsMethodNotSupported := false
 
+		var HasilController *string
+
 		// Panggil request handler pada controller sesuai dengan metode request
 		switch r.Method {
 			case "GET":
 				if ControllerHandler.GET != nil {
-					ControllerHandler.GET(w, r)
+					HasilController = ControllerHandler.GET(w, r)
 					IsHandledByController = true
 				} else { IsMethodNotSupported = true }
 
 			case "POST":
 				if ControllerHandler.POST != nil {
-					ControllerHandler.POST(w, r)
+					HasilController = ControllerHandler.POST(w, r)
 					IsHandledByController = true
 				} else { IsMethodNotSupported = true }
 
 			case "PUT":
 				if ControllerHandler.PUT != nil {
-					ControllerHandler.PUT(w, r)
+					HasilController = ControllerHandler.PUT(w, r)
 					IsHandledByController = true
 				} else { IsMethodNotSupported = true }
 
 			case "DELETE":
 				if ControllerHandler.DELETE != nil {
-					ControllerHandler.DELETE(w, r)
+					HasilController = ControllerHandler.DELETE(w, r)
 					IsHandledByController = true
 				} else { IsMethodNotSupported = true }
 		}
@@ -63,6 +66,17 @@ func HandleRoute(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("500 Terjadi kesalahan pada server"))
 			return
+		}
+
+		// Jika controller mengembalikan sesuatu, kirimkan ke browser
+		if HasilController != nil && len(*HasilController) > 0 {
+			var tmp = []byte(*HasilController)
+
+			// Secara default, kirim konten sebagai HTML
+			w.Header().Add("Content-Type", "text/html")
+			w.Header().Add("Content-Length", fmt.Sprint(len(tmp)))
+			w.WriteHeader(http.StatusOK)
+			w.Write(tmp)
 		}
 
 		return

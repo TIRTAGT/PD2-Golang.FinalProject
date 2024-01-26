@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"errors"
@@ -10,12 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TIRTAGT/PD2-Golang.FinalProject/server"
-)
-
-const (
-	LISTEN_ADDRESS = "localhost"
-	LISTEN_PORT = 8080
+	"github.com/TIRTAGT/PD2-Golang.FinalProject/server/routing"
 )
 
 type RequestHandler struct {
@@ -37,7 +32,7 @@ func (h *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("400 SuS Request"))
 
-		// Print request log like nginx-like
+		// Print request log yang mirip kaya nginx
 		fmt.Printf("%s - [%s] \"%s %s %s\" %d 400_SUS_REQUEST\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusBadRequest)
 		return
 	}
@@ -54,26 +49,27 @@ func (h *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("404 File Asset yang diminta tidak ditemukan"))
 
-			// Print request log like nginx-like
-			fmt.Printf("%s - [%s] \"%s %s %s\" %d 404_FILE_ASSET\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusNotFound)
+			// Print request log yang mirip kaya nginx
+			fmt.Printf("%s - [%s] \"%s %s %s\" %d FILE_ASSET\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusNotFound)
 			return
 		}
 
 		// Jika ada, kirim file tersebut
+		fmt.Printf("%s - [%s] \"%s %s %s\" %d\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusOK)
 		http.ServeFile(w, r, LOKASI_FILE)
 		return
 	}
 	
 	// Kasih requestnya ke server/routes.go
-	server.HandleRoute(w, r)
+	routing.HandleRoute(w, r)
 
-	// Print request log like nginx-like
-	fmt.Printf("%s - [%s] \"%s %s %s\" %d %d\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusOK, r.ContentLength)
+	// Print request log yang mirip kaya nginx
+	fmt.Printf("%s - [%s] \"%s %s %s\" %d %s bytes\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusOK, w.Header().Get("Content-Length"))
 }
 
 var ServerInstance http.Server
 
-func main() {
+func Start(LISTEN_ADDRESS string, LISTEN_PORT int) {
 	fmt.Println("Starting Golang Web Server...")
 
 	var address = LISTEN_ADDRESS + ":" + fmt.Sprintf("%d", LISTEN_PORT)
