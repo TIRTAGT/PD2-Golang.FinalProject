@@ -8,9 +8,5 @@
 
 ----
 
-Folder ini berisi source code untuk implementasi Golang Web Server yang dibuat untuk melakukan simulasi teknik MVC (Model-View-Controller) pada Golang.
-
-----
-
-### Untuk Frontend/Designer
-Anda seharusnya tidak perlu mengubah apapun pada folder ini.
+Folder ini berisi media atau file-file dokumentasi project ini.
+Dapat berupa gambar, video, atau file-file lainnya.
