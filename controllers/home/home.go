@@ -11,7 +11,7 @@ func GET(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	// Tampilkan view test/index.html
-	konten_halaman := utility.FView("/index.html", []utility.VariablePair{
+	konten_halaman := utility.FView("/example.html", []utility.VariablePair{
 		{ Key: "name", Value: "Katon", },
 	})
 
