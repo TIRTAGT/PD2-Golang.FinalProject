@@ -21,8 +21,6 @@ func (h *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	// fmt.Fprintf(w, "count is %d\n", n)
-	// w.Header().Add("Content-Type", "text/html")
 	w.Header().Add("Server", runtime.Version())
 
 	var REQUEST_URI = r.URL.Path
@@ -42,7 +40,7 @@ func (h *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var LOKASI_FILE = "." + REQUEST_URI
 
 		// Cek informasi file tersebut di OS
-		_, err := os.Stat(LOKASI_FILE);
+		_, err := os.Stat(LOKASI_FILE)
 
 		// Jika tidak ada, kirim 404
 		if errors.Is(err, os.ErrNotExist) {
@@ -54,12 +52,14 @@ func (h *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Jika ada, kirim file tersebut
+		// Print request log yang mirip kaya nginx
 		fmt.Printf("%s - [%s] \"%s %s %s\" %d\n", r.RemoteAddr, time.Now().Format("02/Jan/2006:15:04:05 -0700"), r.Method, r.URL.Path, r.Proto, http.StatusOK)
+
+		// Jika ada, kirim file tersebut
 		http.ServeFile(w, r, LOKASI_FILE)
 		return
 	}
-	
+
 	// Kasih requestnya ke server/routes.go
 	routing.HandleRoute(w, r)
 
@@ -68,29 +68,34 @@ func (h *RequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 var ServerInstance http.Server
+var IsServerRunning bool = false
 
-func Start(LISTEN_ADDRESS string, LISTEN_PORT int) {
+func Start(LISTEN_ADDRESS string, LISTEN_PORT int, WaitGroup *sync.WaitGroup) {
 	fmt.Println("Starting Golang Web Server...")
 
 	var address = LISTEN_ADDRESS + ":" + fmt.Sprintf("%d", LISTEN_PORT)
 
 	ServerInstance = http.Server{
-		Addr: address,
-		Handler: new(RequestHandler),
-		ReadTimeout: 10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Addr:           address,
+		Handler:        new(RequestHandler),
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	fmt.Println("Golang Web Server akan dimulai pada: http://" + ServerInstance.Addr + "/")
-	fmt.Println("Tekan CTRL+C atau kirim SIGTERM/SIGINT untuk menghentikan server.")
-	
-	// Sifatnya blocking (kodenya akan berhenti sampai servernya mati)
-	// TODO: Cari alternatif yang non-blocking
-	err := ServerInstance.ListenAndServe()
+	// Start server di background (latar belakang)
+	// @source https://stackoverflow.com/a/42533360
 
-	if err != nil {
-		fmt.Println("Ada kesalahan saat memulai server pada http://" + ServerInstance.Addr + "/")
-		fmt.Println(err.Error())
-	}
+	go func() {
+		defer WaitGroup.Done()
+
+		IsServerRunning = true
+		err := ServerInstance.ListenAndServe()
+		IsServerRunning = false
+
+		if err != nil && err != http.ErrServerClosed {
+			fmt.Println("Ada kesalahan saat memulai server pada http://" + ServerInstance.Addr + "/")
+			fmt.Println(err.Error())
+		}
+	}()
 }
