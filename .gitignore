@@ -18,4 +18,4 @@
 # vendor/
 
 # Jangan izinkan config untuk di commit
-config/
+config/config.go

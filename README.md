@@ -18,11 +18,11 @@
 		<img src="./docs/repository_media/folder_content.png" alt="foto isi project root pada terminal"/>
 	<br>
 	<br>
-	<li>Rename file <kbd>example.config.go</kbd> pada folder <kbd>config/</kbd> menjadi <kbd>config.go</kbd></li>
-		<img src="./docs/repository_media/rename_config.png" alt="foto isi folder config setelah rename file"/>
+	<li>Salin file <kbd>config.go</kbd> pada folder <kbd>config/example/</kbd> ke folder <kbd>config/</kbd></li>
+		<img src="./docs/repository_media/copy_config.png" alt="foto isi folder config setelah rename file"/>
 	<br>
 	<br>
-	<li>Sesuaikan alamat IP dan/atau port dimulainya HTTP server proyek ini tergantung lingkungan perangkat masing masing</li>
+	<li>Sesuaikan konfigurasi proyek ini pada file yang sudah disalin tergantung lingkungan perangkat masing masing</li>
 		<img src="./docs/repository_media/edit_config.png" alt="foto contoh isi file config"/>
 	<br>
 	<br>

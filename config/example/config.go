@@ -2,12 +2,15 @@ package config
 
 /**
 =========================== FIXME: TODO: IMPORTANT: PENTING: ===========================
-	Untuk keamanan saat bekerja dengan public version control,
-	harap pastikan untuk rename file example.config.go menjadi config.go sebelum melakukan
-	perubahan konfigurasi apapun.
+	Untuk mengaktifkan konfigurasi, file config.go pada folder config/example/ perlu
+	di copy ke folder config/
 
-	Walau filenya akan tetap bekerja tanpa direname, sangat disarankan rename untuk
-	menghindari commit file config beserta seluruh informasi privatenya.
+	Untuk keamanan saat bekerja dengan public version control,
+	harap pastikan untuk memindahkan file config.go terlebih dahulu sebelum mengubah
+	konfigurasi apapun.
+
+	Hal ini dilakukan untuk menghindari terjadinya commit file config beserta
+	seluruh informasi privatenya secara tidak sengaja.
 =========================================================================================
 **/
 
