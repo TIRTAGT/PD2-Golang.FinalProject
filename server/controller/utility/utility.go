@@ -2,6 +2,7 @@ package utility
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -72,6 +73,70 @@ func FView(view_name string, variabel []VariablePair) string {
 	hasil, err := View(view_name, variabel)
 
 	if err != nil {
+		fmt.Println("Tidak dapat memuat view '" + view_name + "'", err)
+		return ""
+	}
+
+	return hasil
+}
+
+// Gabungkan view dengan template
+func render_template(view_name string, variabel_tambahan []VariablePair, konten_tambahan []VariablePair) (string, error) {
+	// Coba load view
+	hasil_view, err := View(view_name, variabel_tambahan)
+
+	// Jika gagal, berikan error ke pemanggil fungsi
+	if err != nil {
+		return "view", err
+	}
+
+	// Jika ada <body> di view, hapus saja karena content view harusnya berisi elemen <body> saja
+	hasil_view = strings.ReplaceAll(hasil_view, "<body>", "")
+	hasil_view = strings.ReplaceAll(hasil_view, "</body>", "")
+
+	// Jika tidak ada konten tambahan, buat variabel kosong
+	if konten_tambahan == nil || len(konten_tambahan) == 0 {
+		konten_tambahan = []VariablePair{}
+	}
+	
+	IsViewInjected := false
+	// Cari apakah sudah ada body_content di konten tambahan, hapus(timpah) dengan content view jika ada
+	for i, v := range konten_tambahan {
+		if v.Key == "body_content" {
+			konten_tambahan[i].Value = hasil_view
+			IsViewInjected = true
+			break
+		}
+	}
+
+	// Jika tidak ada body_content di konten tambahan, tambahkan content view ke konten tambahan
+	if !IsViewInjected {
+		konten_tambahan = append(konten_tambahan, VariablePair{"content", hasil_view})
+	}
+
+	// Coba load template
+	hasil_template, err := View("/template.html", konten_tambahan)
+
+	// Jika gagal, berikan error ke pemanggil fungsi
+	if err != nil {
+		return "template", err
+	}
+
+	// Jika berhasil, kembalikan hasilnya
+	return hasil_template, nil
+}
+
+// Gabungkan view dengan template, return string kosong jika gagal (Force View)
+func Frender_template(view_name string, variabel_tambahan []VariablePair, konten_tambahan []VariablePair) string {
+	hasil, err := render_template(view_name, variabel_tambahan, konten_tambahan)
+
+	if err != nil {
+		if (hasil == "view") {
+			fmt.Println("Tidak dapat memuat view '" + view_name + "'", err)
+		} else if (hasil == "template") {
+			fmt.Println("Tidak dapat memuat template.html untuk '" + view_name + "'", err)
+		}
+
 		return ""
 	}
 
