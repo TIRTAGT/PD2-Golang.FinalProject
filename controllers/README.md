@@ -1,5 +1,10 @@
 # PD2-Golang.FinalProject
-Kelompok 3 - Final Project Pemrograman Dasar 2
+<b>Kelompok 3 - Final Project Pemrograman Dasar 2</b><br>
+<b>Anggota Kelompok :</b>
+<ul>
+  <li>Matthew Tirtawidjaja (<a href="https://github.com/TIRTAGT">@TIRTAGT</a>)</li>
+  <li>Katon Kurnia Wijaya (<a href="https://github.com/tonkaton">@tonkaton</a>)</li>
+</ul>
 
 ----
 
@@ -7,7 +12,7 @@ Folder ini berisi source code untuk web backend project Golang Web Server ini.
 
 ----
 
-## Cara buat controller baru
+## Cara membuat controller baru
 1. Buat folder baru sesuai nama rute yang diinginkan
 2. Jalankan perintah untuk membuat module golang baru:
 ```bash
@@ -29,7 +34,7 @@ use (
 	// ...
 	./controllers
 	./controllers/<nama_rute>
-	./server
+	
 	// ...
 )
 ```
@@ -42,7 +47,8 @@ var ControllerMap = map[string]handlerstruct.ControllerStruct {
 	},
 }
 ```
-6. Done, silahkan coba akses.
+6. Restart server
+7. Done, seharusnya sudah bisa akses
 
 ----
 
@@ -54,7 +60,7 @@ use (
 	// ...
 	./controllers
 	./controllers/<nama_rute>    <- hapus ini
-	./server
+	
 	// ...
 )
 ```
@@ -67,4 +73,5 @@ var ControllerMap = map[string]handlerstruct.ControllerStruct {
 	},													-
 }
 ```
-4. Done, seharusnya sudah tidak bisa akses
+4. Restart server
+5. Done, seharusnya sudah tidak bisa akses

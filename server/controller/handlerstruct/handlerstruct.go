@@ -2,7 +2,7 @@ package handlerstruct
 
 import "net/http"
 
-type ControllerHandler func(w http.ResponseWriter, r *http.Request)
+type ControllerHandler func(w http.ResponseWriter, r *http.Request)(*string)
 
 type ControllerStruct struct {
 	// GET handler (optional)
