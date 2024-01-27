@@ -42,9 +42,19 @@ func main() {
 
 	// Cek apakah server sudah berjalan
 	if server.IsServerRunning {
-		fmt.Println("Golang Web Server dimulai pada: http://" + server.ServerInstance.Addr + "/")
+		// Cek apakah listen IP adalah 0.0.0.0, ganti dengan anyhost sebagai display
+		if config.HTTP_LISTEN_ADDRESS == "0.0.0.0" {
+			fmt.Println("Golang Web Server dimulai di semua interface, pada port " + fmt.Sprintf("%d", config.HTTP_LISTEN_PORT) + "")
+			fmt.Println("⚠️  Tergantung konfigurasi Firewall anda, Golang Web Server mungkin dapat diakses dari jaringan publik.")
+		} else {
+			fmt.Println("Golang Web Server dimulai pada: http://" + server.ServerInstance.Addr + "/")
+		}
+
 		fmt.Println("Tekan CTRL+C atau kirim SIGTERM/SIGINT untuk menghentikan server.")
 		ServerSuksesStart = true
+
+		// Izinkan server untuk menerima koneksi browser client
+		server.IzinkanKoneksi = true
 	}
 
 	// Tunggu selama server masih berjalan
