@@ -3,8 +3,10 @@ package submit_form
 import (
 	"crypto/tls"
 	"fmt"
+	"html"
 	"net/http"
 	"net/smtp"
+	"strings"
 
 	"github.com/TIRTAGT/PD2-Golang.FinalProject/config"
 	"github.com/TIRTAGT/PD2-Golang.FinalProject/server/controller/utility"
@@ -23,6 +25,42 @@ func POST(w http.ResponseWriter, r *http.Request) *string {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return nil
 	}
+
+	// Ambil data dari form
+	Form_name := r.Form.Get("name")
+	Form_email := r.PostForm.Get("email")
+	Form_subject := r.PostForm.Get("subject")
+	Form_message := r.PostForm.Get("message")
+
+	// Pastikan panjang nama lebih dari 0
+	if len(Form_name) == 0 {
+		pesan_error := "Nama tidak boleh kosong"
+		return &pesan_error
+	}
+
+	// Pastikan panjang email lebih dari 0, dan memiliki format email yang benar
+	if !IsEmailValid(Form_email) {
+		pesan_error := "Email tidak valid"
+		return &pesan_error
+	}
+
+	// Pastikan panjang subject lebih dari 0
+	if len(Form_subject) == 0 {
+		pesan_error := "Subject tidak boleh kosong"
+		return &pesan_error
+	}
+
+	// Pastikan panjang message lebih dari 0
+	if len(Form_message) == 0 {
+		pesan_error := "Message tidak boleh kosong"
+		return &pesan_error
+	}
+
+	// Escape semua karakter untuk menghindari XSS attack
+	Form_name = html.EscapeString(Form_name)
+	Form_email = html.EscapeString(Form_email)
+	Form_subject = html.EscapeString(Form_subject)
+	Form_message = html.EscapeString(Form_message)
 
 	// #region Koneksi ke Server SMTP
 	// @docs: https://golang.org/pkg/net/smtp/
@@ -98,13 +136,13 @@ func POST(w http.ResponseWriter, r *http.Request) *string {
 	}
 	// #endregion
 
-	// Ambil data dari form
-	// FIXME: VALIDASI DATA UNTUK MENGHINDARI XSS ATTACK
-	name := r.PostForm.Get("name")
-
 	// Siapkan isi email berdasarkan template
 	konten_halaman := utility.FView("/submit_form/mail_template.html", []utility.VariablePair{
-		{Key: "name", Value: name},
+		{Key: "name", Value: Form_name},
+		{Key: "email", Value: Form_email},
+		{Key: "subject", Value: Form_subject},
+		{Key: "message", Value: Form_message},
+		{Key: "page_title", Value: "Web MK"},
 	})
 
 	// Kirim email
@@ -137,7 +175,33 @@ func POST(w http.ResponseWriter, r *http.Request) *string {
 	// Tutup koneksi
 	SMTPSession.Quit()
 
-	// Kirim konten halaman ke browser (sebagai response dari server)
-	pesan_berhasil := "Email berhasil dikirim !"
+	fmt.Println("Email berhasil dikirim ke", config.MAIL_SMTP_RECEIVER_ADDRESS)
+
+	// Kirim OK ke client, validate.js pada sisi client akan mengubahnya menjadi alert success
+	pesan_berhasil := "OK"
 	return &pesan_berhasil
+}
+
+func IsEmailValid(email string) bool {
+	// Pastikan email tidak kosong
+	if len(email) == 0 {
+		return false
+	}
+
+	// Email tidak boleh ada spasi
+	if strings.Contains(email, " ") {
+		return false
+	}
+
+	// Email wajib ada 1 "@" saja
+	if strings.Count(email, "@") > 1 {
+		return false
+	}
+
+	// Email wajib ada 1 atau lebih "."
+	if strings.Count(email, ".") < 1 {
+		return false
+	}
+
+	return true
 }
