@@ -52,7 +52,7 @@
   function php_email_form_submit(thisForm, action, formData) {
     fetch(action, {
       method: 'POST',
-      body: formData,
+      body: new URLSearchParams(formData), // https://stackoverflow.com/questions/72243964/how-can-you-read-post-data-from-a-javascript-xmlhttprequest-in-golang
       headers: {'X-Requested-With': 'XMLHttpRequest'}
     })
     .then(response => {
