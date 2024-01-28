@@ -25,6 +25,11 @@ func POST(w http.ResponseWriter, r *http.Request) *string {
 	}
 
 	// #region Koneksi ke Server SMTP
+	// @docs: https://golang.org/pkg/net/smtp/
+	// @reference: https://gist.github.com/jpillora/cb46d183eca0710d909a
+	// @reference: https://gist.github.com/muskankhedia/084243aceb55fdedf5c834691cefa3c1
+	// @reference: https://stackoverflow.com/a/9951508/12718814
+
 	TLSConn, err := tls.Dial("tcp", fmt.Sprintf("%s:%d", config.MAIL_SMTP_HOSTNAME, config.MAIL_SMTP_PORT), &tls.Config{
 		ServerName: config.MAIL_SMTP_HOSTNAME,
 	})
