@@ -23,4 +23,14 @@ const (
 	DATABASE_USERNAME = "root"
 	DATABASE_PASSWORD = "root"
 	DATABASE_NAME     = "PD2_Golang_FinalProject"
+
+	MAIL_SMTP_HOSTNAME         = "smtp.example.com"
+	MAIL_SMTP_PORT             = 587
+	MAIL_SMTP_SENDER_NAME      = "Example Sender"
+	MAIL_SMTP_SENDER_ADDRESS   = "sender@example.com"
+	MAIL_SMTP_RECEIVER_NAME    = "Example Receiver"
+	MAIL_SMTP_RECEIVER_ADDRESS = "receiver@example.com"
+	MAIL_SMTP_USERNAME         = MAIL_SMTP_SENDER_ADDRESS
+	MAIL_SMTP_PASSWORD         = "password"
+	MAIL_SUBJECT               = "Example Subject"
 )
